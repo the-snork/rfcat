@@ -7,7 +7,7 @@
 // and DMA1CFG for DMA channels 1-4), 1-4 must be allocated in contiguous memory so the DMA controller
 // can find them based on their offsets. We therefore allocate memory for the desired number of channels
 // here and then point at them in the main code. For consistency we include channel 0 even though this
-// isn't strictly necessary. 
+// isn't strictly necessary.
 //
 // example:
 //
@@ -24,28 +24,28 @@
 //
 
 __xdata DMA_DESC dma_configs[DMA_CHANNELS];
-__data u8 dma_channels= 0;
+__data u8 dma_channels = 0;
 
 void initDMA(void)
 {
-    if(DMA_CHANNELS)
+    if (DMA_CHANNELS)
     {
-        DMA0CFGH = ((u16)(&dma_configs[0]))>>8;
-        DMA0CFGL = ((u16)(&dma_configs[0]))&0xff;
+        DMA0CFGH = ((u16)(&dma_configs[0])) >> 8;
+        DMA0CFGL = ((u16)(&dma_configs[0])) & 0xff;
     }
-    if(DMA_CHANNELS > 1)
+    if (DMA_CHANNELS > 1)
     {
-        DMA1CFGH = ((u16)(&dma_configs[1]))>>8;
-        DMA1CFGL = ((u16)(&dma_configs[1]))&0xff;
+        DMA1CFGH = ((u16)(&dma_configs[1])) >> 8;
+        DMA1CFGL = ((u16)(&dma_configs[1])) & 0xff;
     }
     // FIXME: is this necessary or is new memory already 0 filled?
-    memset(dma_configs,'\0',sizeof(DMA_DESC)*DMA_CHANNELS);
+    memset(dma_configs, '\0', sizeof(DMA_DESC) * DMA_CHANNELS);
 }
 
 // allocate next DMA channel. return 0xff if none left.
 u8 getDMA(void)
 {
-    if(dma_channels == DMA_CHANNELS)
+    if (dma_channels == DMA_CHANNELS)
         return 0xff;
     else
         return dma_channels++;

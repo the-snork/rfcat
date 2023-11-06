@@ -39,7 +39,6 @@ USB_GET_INTERFACE               =0x0a
 USB_SET_INTERFACE               =0x11
 USB_SYNCH_FRAME                 =0x12
 
-APP_GENERIC                     = 0x01
 APP_DEBUG                       = 0xfe
 APP_SYSTEM                      = 0xff
 
@@ -47,27 +46,12 @@ APP_SYSTEM                      = 0xff
 SYS_CMD_PEEK                    = 0x80
 SYS_CMD_POKE                    = 0x81
 SYS_CMD_PING                    = 0x82
-SYS_CMD_STATUS                  = 0x83
-SYS_CMD_POKE_REG                = 0x84
-SYS_CMD_GET_CLOCK               = 0x85
 SYS_CMD_BUILDTYPE               = 0x86
 SYS_CMD_BOOTLOADER              = 0x87
 SYS_CMD_RFMODE                  = 0x88
-SYS_CMD_COMPILER                = 0x89
 SYS_CMD_PARTNUM                 = 0x8e
 SYS_CMD_RESET                   = 0x8f
-SYS_CMD_CLEAR_CODES             = 0x90
 SYS_CMD_DEVICE_SERIAL_NUMBER    = 0x91
-SYS_CMD_LED_MODE                = 0x93
-
-EP0_CMD_GET_DEBUG_CODES         = 0x00
-EP0_CMD_GET_ADDRESS             = 0x01
-EP0_CMD_POKEX                   = 0x01
-EP0_CMD_PEEKX                   = 0x02
-EP0_CMD_PING0                   = 0x03
-EP0_CMD_PING1                   = 0x04
-EP0_CMD_RESET                   = 0xfe
-
 
 DEBUG_CMD_STRING                = 0xf0
 DEBUG_CMD_HEX                   = 0xf1
@@ -80,23 +64,7 @@ EP5IN_MAX_PACKET_SIZE           = 64
 # EP5OUT_BUFFER_SIZE must match firmware/include/chipcon_usb.h definition
 EP5OUT_BUFFER_SIZE              = 516
 
-LC_USB_INITUSB                = 0x2
-LC_MAIN_RFIF                  = 0xd
-LC_USB_DATA_RESET_RESUME      = 0xa
-LC_USB_RESET                  = 0xb
-LC_USB_EP5OUT                 = 0xc
-LC_RF_VECTOR                  = 0x10
-LC_RFTXRX_VECTOR              = 0x11
-
-LCE_USB_EP5_TX_WHILE_INBUF_WRITTEN    = 0x1
-LCE_USB_EP0_SENT_STALL                = 0x4
-LCE_USB_EP5_OUT_WHILE_OUTBUF_WRITTEN  = 0x5
 LCE_USB_EP5_LEN_TOO_BIG               = 0x6
-LCE_USB_EP5_GOT_CRAP                  = 0x7
-LCE_USB_EP5_STALL                     = 0x8
-LCE_USB_DATA_LEFTOVER_FLAGS           = 0x9
-LCE_RF_RXOVF                          = 0x10
-LCE_RF_TXUNF                          = 0x11
 
 RCS = {}
 LCS = {}

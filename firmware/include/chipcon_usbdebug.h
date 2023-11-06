@@ -1,9 +1,8 @@
-#include "global.h"
-
 #ifndef CC1111USBDEBUG_H
 #define CC1111USBDEBUG_H
 
-void debugEP0Req(u8 * __xdata pReq);
+#include "global.h"
+
 void debug(__code u8* __xdata  text);
 void debugx(__xdata u8* __xdata  text);
 void debughex(__xdata u8 num);

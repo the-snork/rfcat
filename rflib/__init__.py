@@ -13,7 +13,7 @@ RFCAT_STOP_SPECAN   = 0x41
 
 MAX_FREQ = 936e6
 
-class RfCat(FHSSNIC):
+class RfCat(NICxx11):
     def RFdump(self, msg="Receiving", maxnum=100, timeoutms=1000):
         try:
             for x in range(maxnum):
@@ -117,9 +117,6 @@ class RfCat(FHSSNIC):
 
         try:
             while True:
-                #if self._pause:
-                #    continue
-
                 try:
                     x,y,z = select.select([fd0i ], [], [], .1)
                     if fd0i in x:
@@ -180,104 +177,4 @@ class RfCat(FHSSNIC):
         except KeyboardInterrupt:
             self.setModeIDLE()
 
-class InverseCat(RfCat):
-    def setMdmSyncWord(self, word, radiocfg=None):
-        FHSSNIC.setMdmSyncWord(self, word ^ 0xffff, radiocfg)
 
-    def RFrecv(self, timeout=1000):
-        global data
-        data,timestamp = RfCat.RFrecv(self, timeout)
-        return rfbits.invertBits(data),timestamp
-
-    def RFxmit(self, data):
-        return RfCat.RFxmit(self, rfbits.invertBits(data) )
-
-def cleanupInteractiveAtExit():
-    try:
-        if d.getDebugCodes():
-           d.setModeIDLE()
-        pass
-    except:
-        pass
-
-def interactive(idx=0, DongleClass=RfCat, intro='', safemode=False):
-    global d
-    import rflib.chipcon_nic as rfnic
-    import atexit
-
-    d = DongleClass(idx=idx, debug=safemode, safemode=safemode)
-    if not safemode:
-        d.setModeRX()       # this puts the dongle into receive mode
-
-    atexit.register(cleanupInteractiveAtExit)
-
-    print(intro)
-    gbls = globals()
-    lcls = locals()
-    interact(lcls, gbls)
-
-STYPE_NONE = 0
-STYPE_IPYTHON = 1
-STYPE_IPYTHON811P = 2
-STYPE_CODE_INTERACT = 3
-
-def interact(lcls, gbls, intro=""):
-    shelltype = STYPE_NONE
-    try:
-        from IPython.terminal.embed import embed
-        print(intro)
-        shelltype = STYPE_IPYTHON811P
-
-    except ImportError as e:
-        try:
-            import IPython.Shell
-            ipsh = IPython.Shell.IPShell(argv=[''], user_ns=lcls, user_global_ns=gbls)
-            print(intro)
-            shelltype = STYPE_IPYTHON
-
-        except ImportError as e:
-            try:
-                from IPython.terminal.interactiveshell import TerminalInteractiveShell
-                ipsh = TerminalInteractiveShell()
-                ipsh.user_global_ns.update(gbls)
-                ipsh.user_global_ns.update(lcls)
-                ipsh.autocall = 2       # don't require parenthesis around *everything*.  be smart!
-                shelltype = STYPE_IPYTHON
-                print(intro)
-
-            except ImportError as e:
-                try:
-                    from IPython.frontend.terminal.interactiveshell import TerminalInteractiveShell
-                    ipsh = TerminalInteractiveShell()
-                    ipsh.user_global_ns.update(gbls)
-                    ipsh.user_global_ns.update(lcls)
-                    ipsh.autocall = 2       # don't require parenthesis around *everything*.  be smart!
-                    shelltype = STYPE_IPYTHON
-
-                    print(intro)
-                except ImportError as e:
-                    print(e)
-                    shell = code.InteractiveConsole(gbls)
-                    shelltype = STYPE_IPYTHON
-                    print(intro)
-
-    if shelltype == STYPE_IPYTHON811P:
-        embed()
-
-    elif shelltype == STYPE_IPYTHON:
-        ipsh.mainloop()
-
-    elif shelltype == STYPE_CODE_INTERACT:
-        print("falling back to straight Python... (%r)" % shellexception)
-        shell.interact()
-
-    else:
-        print("SORRY, NO INTERACTIVE OPTIONS AVAILABLE!!  wtfo?")
-
-
-if __name__ == "__main__":
-    idx = 0
-    if len(sys.argv) > 1:
-        idx = int(sys.argv.pop())
-
-    interactive(idx)

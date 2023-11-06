@@ -14,27 +14,12 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s:%(levelname)s:%(name
 logger = logging.getLogger(__name__)
 
 
-intro = """'RfCat, the greatest thing since Frequency Hopping!'
-
-Research Mode: enjoy the raw power of rflib
-
-currently your environment has an object called "d" for dongle.  this is how 
-you interact with the rfcat dongle:
-    >>> d.ping()
-    >>> d.setFreq(433000000)
-    >>> d.setMdmModulation(MOD_ASK_OOK)
-    >>> d.makePktFLEN(250)
-    >>> d.RFxmit(b"HALLO")
-    >>> d.RFrecv()
-    >>> print(d.reprRadioConfig())
-
-"""
+intro = """'RfCat, the greatest thing since Frequency Hopping!'"""
 
 if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-r', '--research', default=False, action="store_true", help='Interactive Python and the "d" instance to talk to your dongle.  melikey longtime.')
     parser.add_argument('-i', '--index', default=0, type=int) 
     parser.add_argument('-s', '--specan', default=False, action="store_true", help='start spectrum analyzer')
     parser.add_argument('-f', '--centfreq', default=902e6, type=float) 
@@ -57,9 +42,6 @@ if __name__ == "__main__":
 
     elif ifo.specan:
         RfCat(ifo.index).specan(ifo.centfreq,ifo.inc,ifo.specchans)
-
-    elif ifo.research:
-        interactive(ifo.index, DongleClass=RfCat, intro=intro, safemode=ifo.safemode)
 
     else:
         # do the full-rfcat thing
