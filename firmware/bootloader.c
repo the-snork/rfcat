@@ -16,7 +16,6 @@ void run_bootloader(void)
   SLEEP &= ~SLEEP_USB_EN;
   // abort and disarm all DMA
   DMAARM = 0x9F;
-  LED = 0;
 
   // Jump to bootloader (if there isn't one this will just cause a reset)
   __asm ljmp 0x00 __endasm;

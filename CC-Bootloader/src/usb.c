@@ -100,9 +100,11 @@ static void usb_get_descriptor(uint16_t value)
         usb_ep0_in_len = descriptor[2];
       else
         usb_ep0_in_len = descriptor[0];
+
       usb_ep0_in_data = descriptor;
       break;
     }
+    
     descriptor += descriptor[0];
   }
 }

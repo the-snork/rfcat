@@ -110,8 +110,7 @@ void bootloader_main(void)
   // use I2S SFR to signal that bootloader is present
   I2SCLKF0 = 0xF0;
   I2SCLKF1 = 0x0D;
-
-  setup_button();
+  
   setup_gpio();
 
   if (PIN_DC != 0 && !want_bootloader())
@@ -122,8 +121,6 @@ void bootloader_main(void)
 
   clock_init();
 
-  setup_led();
-
   usb_init();
 
   // Enable interrupts
@@ -131,7 +128,6 @@ void bootloader_main(void)
 
   // Bring up the USB link
   usb_up();
-  led_on();
 
   while (1)
   {

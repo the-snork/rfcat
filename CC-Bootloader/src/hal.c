@@ -20,18 +20,6 @@
 #include "cc1111.h"
 #include "hal.h"
 
-void setup_led(void)
-{
-  // Setup LED and turn it off
-  P1DIR |= LED_MASK;
-  led_off();
-}
-
-void setup_button(void)
-{
-  P2DIR &= ~(1 << 2);
-}
-
 // any other gpio pins
 void setup_gpio(void)
 {
@@ -41,23 +29,10 @@ void setup_gpio(void)
   P0INP &= ~P0INP_MDP0_0_TRISTATE; // Set as pull up/down (rather than tristate)
   P2INP &= ~P2INP_PDUP0_PULL_DOWN; // clear pull down bit (i.e. pull up)
   P2DIR |= 0x19;
+  P2DIR &= ~(1 << 2);
   TX_AMP_EN = 0;
   RX_AMP_EN = 0;
   AMP_BYPASS_EN = 1;
-}
-
-void led_on(void)
-{
-  LED1 = 1;
-  LED2 = 1;
-  LED3 = 1;
-}
-
-void led_off(void)
-{
-  LED1 = 0;
-  LED2 = 0;
-  LED3 = 0;
 }
 
 void usb_up(void)

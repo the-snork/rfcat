@@ -339,7 +339,6 @@ void appReturn(__xdata u8 len, __xdata u8 *__xdata response);
 #define CMD_PEEK 0x80
 #define CMD_POKE 0x81
 #define CMD_PING 0x82
-#define CMD_BUILDTYPE 0x86
 #define CMD_BOOTLOADER 0x87
 #define CMD_RFMODE 0x88
 #define CMD_COMPILER 0x89

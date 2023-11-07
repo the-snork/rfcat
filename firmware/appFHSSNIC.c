@@ -110,10 +110,7 @@ __xdata u8 transmit_long(__xdata u8 *__xdata buf, __xdata u16 len, __xdata u8 bl
 
     macdata.mac_state = MAC_STATE_LONG_XMIT;
     while (MARCSTATE == MARC_STATE_TX)
-    {
-    }
-    // Leave LED in a known state (off)
-    LED = 0;
+        ;
 
     // setup infinite mode, length, and the variables that will last for and manage the whole transmission
     rfTxTotalTXLen = len;
@@ -170,11 +167,8 @@ __xdata u8 transmit_long(__xdata u8 *__xdata buf, __xdata u16 len, __xdata u8 bl
     // wait until we're safely in TX mode
     countdown = 60000;
     while (MARCSTATE != MARC_STATE_TX && --countdown)
-    {
-    }
+        ;
 
-    // LED on - we're transmitting
-    LED = 1;
     if (!countdown)
     {
         debug("never entered TX");
@@ -284,7 +278,6 @@ void MAC_sync(__xdata u16 CellID)
             break;
 
         macdata.curChanIdx++;
-        blink(10, 10);
     }
 
     // set state =  SYNC
@@ -435,7 +428,6 @@ void t2IntHandler(void) __interrupt(T2_VECTOR) // interrupt handler should trigg
 
             if (g_txMsgQueue[macdata.txMsgIdxDone][0]) // if length byte >0
             {
-                // LED = !LED;
                 sleepMillis(FHSS_TX_SLEEP_DELAY);
                 transmit(&g_txMsgQueue[macdata.txMsgIdxDone][!(PKTCTRL0 & 1)], g_txMsgQueue[macdata.txMsgIdxDone][0], 0, 0);
                 // FIXME: rudimentary FHSS_tx in interrupt handler, make more elegant (with confirmation or somesuch?)
@@ -820,13 +812,11 @@ int appHandleEP5(void)
                     debughex(g_txMsgQueue[0][0]);
                     debughex(g_txMsgQueue[1][0]);
                     buf[0] = RC_TX_DROPPED_PACKET;
-                    LED = 0;
                     resetRFSTATE();
                     macdata.mac_state = MAC_STATE_NONHOPPING;
                     appReturn(1, buf);
                     break;
                 }
-                LED = 0;
                 macdata.mac_state = MAC_STATE_NONHOPPING;
                 buf[0] = LCE_NO_ERROR;
                 debug("total bytes tx:");
@@ -841,7 +831,6 @@ int appHandleEP5(void)
                 // TX underrun
                 buf[0] = RC_RF_MODE_INCOMPAT;
                 appReturn(1, buf);
-                LED = 0;
                 resetRFSTATE();
                 macdata.mac_state = MAC_STATE_NONHOPPING;
                 break;
@@ -853,7 +842,6 @@ int appHandleEP5(void)
             {
                 debug("buffer error");
                 debughex(buf[0]);
-                LED = 0;
                 resetRFSTATE();
                 macdata.mac_state = MAC_STATE_NONHOPPING;
             }
@@ -1083,8 +1071,6 @@ void main(void)
     /* Enable interrupts */
     EA = 1;
     waitForUSBsetup();
-
-    REALLYFASTBLINK();
 
     while (1)
     {

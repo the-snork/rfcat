@@ -125,16 +125,13 @@ struct usb_line_coding
 #define USB_PID 0x605C
 // iManufacturer
 #define USB_iManufacturer_LEN 0x28
-#define USB_iManufacturer_STRING "Great Scott Gadgets"
 #define USB_iManufacturer_UCS2 'G', 0, 'r', 0, 'e', 0, 'a', 0, 't', 0, ' ', 0, 'S', 0, 'c', 0, 'o', 0, 't', 0, 't', 0, ' ', 0, 'G', 0, 'a', 0, 'd', 0, 'g', 0, 'e', 0, 't', 0, 's', 0
 // iProduct
 #define USB_iProduct_LEN 0x34
-#define USB_iProduct_STRING "YARD Stick One Bootloader"
 #define USB_iProduct_UCS2 'Y', 0, 'A', 0, 'R', 0, 'D', 0, ' ', 0, 'S', 0, 't', 0, 'i', 0, 'c', 0, 'k', 0, ' ', 0, 'O', 0, 'n', 0, 'e', 0, ' ', 0, 'B', 0, 'o', 0, 'o', 0, 't', 0, 'l', 0, 'o', 0, 'a', 0, 'd', 0, 'e', 0, 'r', 0
 
 // iSerial
 #define USB_iSerial_LEN 0x0e
-#define USB_iSerial_STRING "000001"
 #define USB_iSerial_UCS2 '0', 0, '0', 0, '0', 0, '0', 0, '0', 0, '1', 0
 
 extern __code __at(0x00aa) uint8_t usb_descriptors[];

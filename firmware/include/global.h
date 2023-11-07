@@ -9,8 +9,6 @@
 
 extern __xdata u32 clock;
 
-extern __xdata u8 ledMode;
-
 #define LC_DEVICE_SERIAL_NUMBER 0x13f0
 
 #define LCE_NO_ERROR 0x0
@@ -83,50 +81,15 @@ extern __xdata u8 ledMode;
 void usbIntHandler(void) __interrupt(P2INT_VECTOR);
 void p0IntHandler(void) __interrupt(P0INT_VECTOR);
 
-#define LED1 P1_1
-#define LED_GREEN P1_1
-#define LED2 P1_2
-#define LED_RED P1_2
-#define LED3 P1_3
-#define LED_YELLOW P1_3
 #define TX_AMP_EN P2_0
 #define RX_AMP_EN P2_4
 #define AMP_BYPASS_EN P2_3
 
-#define LED LED_GREEN
-
-#define REALLYFASTBLINK() \
-    {                     \
-        LED = 1;          \
-        sleepMillis(2);   \
-        LED = 0;          \
-        sleepMillis(10);  \
-    }
-#define blink(on_cycles, off_cycles) \
-    {                                \
-        LED = 1;                     \
-        sleepMillis(on_cycles);      \
-        LED = 0;                     \
-        sleepMillis(off_cycles);     \
-    }
-#define BLOCK()                 \
-    {                           \
-        while (1)               \
-        {                       \
-            REALLYFASTBLINK();  \
-            usbProcessEvents(); \
-        }                       \
-    }
 #define LE_WORD(x) ((x)&0xFF), ((u8)(((u16)(x)) >> 8))
-#define ASCII_LONG(x) '0' + x / 1000 % 10, '0' + x / 100 % 10, '0' + x / 10 % 10, '0' + x % 10
-#define QUOTE(x) XQUOTE(x)
-#define XQUOTE(x) #x
 
 /* function declarations */
 void sleepMillis(int ms);
 void t1IntHandler(void) __interrupt(T1_VECTOR); // interrupt handler should trigger on T1 overflow
 void clock_init(void);
 void io_init(void);
-void blink_binary_baby_lsb(u16 num, signed char bits);
-int strncmp(const char *__xdata s1, const char *__xdata s2, u16 n);
 #endif

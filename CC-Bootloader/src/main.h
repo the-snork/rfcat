@@ -1,5 +1,5 @@
 /*
- * CC Bootloader - Main 
+ * CC Bootloader - Main
  *
  * Fergus Noble (c) 2011
  *
@@ -16,22 +16,22 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  */
- 
+
 #ifndef _MAIN_H_
 #define _MAIN_H_
 
 // The address of the start of the user code section
 // This must be a multiple of 1kb to fit on a flash page boundary
 // !!! NOTE: at the moment you must also change this in start.asm IVT !!!
-#define USER_CODE_BASE (5*1024)
-#define USER_FIRST_PAGE (USER_CODE_BASE/1024)
+#define USER_CODE_BASE (5 * 1024)
+#define USER_FIRST_PAGE (USER_CODE_BASE / 1024)
 
 // Change to match the CC1111 part you are using
 #define FLASH_SIZE 0x8000
 //(32*1024)
-#define FLASH_PAGES (FLASH_SIZE/1024)
+#define FLASH_PAGES (FLASH_SIZE / 1024)
 
-#define nop()	__asm nop __endasm;
+#define nop() __asm nop __endasm;
 
 extern uint8_t bootloader_running;
 

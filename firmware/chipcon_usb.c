@@ -37,26 +37,6 @@ __data u8 usbdmachan, usbdmaarm;
 
 __xdata int (*cb_ep5)(void);
 
-// BUILD_VERSION is passed in -D from Makefile
-__code u8 buildname[] = {
-    'Y',
-    'A',
-    'R',
-    'D',
-    'S',
-    'T',
-    'I',
-    'C',
-    'K',
-    'O',
-    'N',
-    'E',
-    ' ',
-    'r',
-    ASCII_LONG(BUILD_VERSION),
-    '\x00',
-};
-
 // USB endpoint
 #define ID_VENDOR 0x1D50
 #define ID_PRODUCT 0x605b
@@ -89,7 +69,7 @@ int txdata(u8 app, u8 cmd, u16 len, __xdata u8 *dataptr) // assumed EP5 for appl
         // don't know why since this bit is cleared in the USB ISR.
         loop = TXDATA_MAX_WAIT;
 
-        while (USBCSIL & USBCSIL_INPKT_RDY && loop > 0)                 // has last msg been recvd?
+        while (USBCSIL & USBCSIL_INPKT_RDY && loop > 0) // has last msg been recvd?
         {
             loop--;
         }
@@ -98,7 +78,6 @@ int txdata(u8 app, u8 cmd, u16 len, __xdata u8 *dataptr) // assumed EP5 for appl
         //  ODD POINT OF INTEREST: INFINITE MODE FAILS IF WE REMOVE THIS... ??
         if (!loop)
         {
-            blink(1000, 1000);
             return -1;
         }
 
@@ -202,7 +181,7 @@ void usb_init(void)
     usbdma->tMode = 1;
     usbdma->irqMask = 1;
     usbdma->priority = 1;
- 
+
     USBPOW &= ~USBPOW_SUSPEND_EN; // i don't *wanna* go to sleep if the usb bus is idle for 3ms.  at least not yet.
 
     usb_data.config = 0; // start out unconfigured
@@ -248,7 +227,7 @@ void initUSB(void)
     usbdmachan = getDMA();               // allocate a DMA channel
     usbdmaarm = (DMAARM0 << usbdmachan); // pre-calculate arming bit
     usbdma = &dma_configs[usbdmachan];   // point our DMA descriptor at allocated channel descriptor
-    usb_init(); // setup the usb controller settings
+    usb_init();                          // setup the usb controller settings
 }
 
 // usb_up() pulls up the USB_PULLUP_ENABLE signal, which makes the device show up to the Host
@@ -271,9 +250,6 @@ int setup_send_ep0(u8 *__xdata payload, u16 length)
     if (ep0.epstatus != EP_STATE_IDLE)
     {
         /* catastrophic error.  *must* fix! */
-        blink(1000, 1000);
-        blink(1000, 1000);
-        blink(1000, 1000);
         return -1;
     }
 
@@ -290,9 +266,6 @@ int setup_sendx_ep0(__xdata u8 *__xdata payload, u16 length)
     if (ep0.epstatus != EP_STATE_IDLE)
     {
         /* catastrophic error.  *must* fix! */
-        blink(1000, 1000);
-        blink(1000, 1000);
-        blink(1000, 1000);
         return -1;
     }
 
@@ -371,9 +344,6 @@ u16 usb_recv_ep0OUT(void)
         return -1;
     }
     ep0.flags |= EP_OUTBUF_WRITTEN; // hey, we've written here, don't write again until this is cleared by a application handler
-
-    if (ep0.OUTlen > EP0_MAX_PACKET_SIZE)
-        blink(300, 300);
 
     ///////////////////////////////  FIXME: USE DMA //////////////////////////////////////////
     for (loop = ep0.OUTlen; loop > 0; loop--)
@@ -518,12 +488,10 @@ void handleCS0(void)
     {
         USBCS0 = 0x00;
         ep0.epstatus = EP_STATE_IDLE;
-        blink(20, 20);
     }
 
     if (ep0.epstatus == EP_STATE_STALL)
     {
-        blink(50, 50);
         ep0.epstatus = EP_STATE_IDLE;
     }
 
@@ -786,7 +754,7 @@ int handleOUTEP5(void)
     }
 
     while ((DMAIRQ & usbdmaarm))
-        blink(20, 20);
+        ;
 
     // points our destination at the next free point in our buffer
     ptr = &ep5.OUTbuf[0] + ep5.OUTlen;
@@ -810,8 +778,6 @@ int handleOUTEP5(void)
     if (len > EP5OUT_MAX_PACKET_SIZE) // FIXME: if they wanna send too much data, do we accept what we can?  or bomb?
     {                                 //  currently choosing to bomb.
         USBCSOL &= ~USBCSOL_OUTPKT_RDY;
-        blink_binary_baby_lsb(5, 4);
-        blink_binary_baby_lsb(len, 16);
         return -2;
     }
 
@@ -887,12 +853,7 @@ void processOUTEP5(void)
             break;
 
         case CMD_PING:
-            blink(2, 2);
             txdata(ep5.OUTapp, ep5.OUTcmd, ep5.OUTlen, ptr);
-            break;
-
-        case CMD_BUILDTYPE:
-            txdata(ep5.OUTapp, ep5.OUTcmd, sizeof(buildname), (__xdata u8 *)&buildname[0]);
             break;
 
         case CMD_BOOTLOADER:
@@ -909,7 +870,6 @@ void processOUTEP5(void)
                 RxMode();
                 break;
             case RFST_SIDLE:
-                LED = 0;
                 IdleMode();
                 break;
             case RFST_STX:
@@ -929,9 +889,6 @@ void processOUTEP5(void)
             break;
 
         case CMD_RESET:
-            if (strncmp(ptr, "RESET_NOW", 9))
-                break; // didn't match the signature.  must have been an accident.
-
             // implement a RESET by trigging the watchdog timer
             WDCTL = 0x80; // Watchdog ENABLE, Watchdog mode, 1s until reset
 
@@ -1057,8 +1014,6 @@ void usbProcessEvents(void)
     if (usb_data.event & ~(USBD_IIF_INEP5IF | USBD_OIF_OUTEP5IF | USBD_IIF_EP0IF | USBD_CIF_RESET |
                            USBD_CIF_RESUME | USBD_CIF_SUSPEND | USBD_CIF_SOFIF))
     {
-        blink_binary_baby_lsb(0x44, 8);
-        blink_binary_baby_lsb(usb_data.event, 16);
         usb_data.event &= ~(USBD_IIF_INEP5IF | USBD_OIF_OUTEP5IF | USBD_IIF_EP0IF | USBD_CIF_RESET |
                             USBD_CIF_RESUME | USBD_CIF_SUSPEND | USBD_CIF_SOFIF);
     }
@@ -1084,7 +1039,7 @@ void usbIntHandler(void) __interrupt(P2INT_VECTOR)
     }
 
     // Clear the P2 interrupt flag
-    USB_INT_CLEAR(); 
+    USB_INT_CLEAR();
 }
 
 void p0IntHandler(void) __interrupt(P0INT_VECTOR) // P0_7's interrupt is used as the USB RESUME interrupt
@@ -1188,7 +1143,7 @@ __code u8 USBDESCBEGIN[] =
         // Serial number
         10,              // bLength
         USB_DESC_STRING, // bDescriptorType
-        USB_DEVICE_SERIAL_NUMBER
+        '0',0,'0',0,'0',0,'0',0,
         // Serial number
         18,              // bLength
         USB_DESC_STRING, // bDescriptorType

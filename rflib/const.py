@@ -46,7 +46,6 @@ APP_SYSTEM                      = 0xff
 SYS_CMD_PEEK                    = 0x80
 SYS_CMD_POKE                    = 0x81
 SYS_CMD_PING                    = 0x82
-SYS_CMD_BUILDTYPE               = 0x86
 SYS_CMD_BOOTLOADER              = 0x87
 SYS_CMD_RFMODE                  = 0x88
 SYS_CMD_PARTNUM                 = 0x8e

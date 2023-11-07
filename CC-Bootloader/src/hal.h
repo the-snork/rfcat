@@ -20,10 +20,6 @@
 #ifndef _HAL_H_
 #define _HAL_H_
 
-#define LED1 P1_1
-#define LED2 P1_2
-#define LED3 P1_3
-#define LED_MASK 0x0E
 #define USB_ENABLE P1_0
 #define USB_MASK 0x01
 #define PIN_DC P2_2
@@ -31,10 +27,6 @@
 #define RX_AMP_EN P2_4
 #define AMP_BYPASS_EN P2_3
 
-void setup_led(void);
-void led_on(void);
-void led_off(void);
-void setup_button(void);
 void setup_gpio(void);
 
 void usb_up(void);

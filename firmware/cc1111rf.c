@@ -184,11 +184,8 @@ u8 transmit(__xdata u8 *__xdata buf, __xdata u16 len, __xdata u16 repeat, __xdat
 
     while (MARCSTATE == MARC_STATE_TX)
     {
-        LED = ledMode & !LED;
         usbProcessEvents();
     }
-    // Leave LED in a known state (off)
-    LED = 0;
 
     // Set up repeat / large blocks
     rfTxInfMode = 0;
@@ -305,21 +302,13 @@ u8 transmit(__xdata u8 *__xdata buf, __xdata u16 len, __xdata u16 repeat, __xdat
     while (MARCSTATE != MARC_STATE_TX && --countdown)
     {
         // FIXME: if we never end up in TX, why not?  seeing it in RX atm...  what's setting it there?  we can't have missed the whole tx!  we're not *that* slow!  although if other interrupts occurred?
-        LED = ledMode & !LED;
         usbProcessEvents();
     }
-    // LED on - we're transmitting
-    LED = ledMode & 1;
 
     while (MARCSTATE == MARC_STATE_TX)
     {
-        LED = ledMode & !LED;
-
         usbProcessEvents();
     }
-
-    // LED off - we're done
-    LED = 0;
 
     // reset PKTLEN as we may have messed with it
     PKTLEN = original_pktlen;
@@ -366,8 +355,6 @@ void rfTxRxIntHandler(void) __interrupt(RFTXRX_VECTOR) // interrupt handler shou
 
     if (MARCSTATE == MARC_STATE_RX)
     { // Receive Byte
-        // LED on - we're receiving
-        LED = ledMode & 1;
         // maintain infinite mode
         if (rfRxInfMode)
             if (rfRxTotalRXLen-- < 256)
@@ -424,7 +411,6 @@ void rfTxRxIntHandler(void) __interrupt(RFTXRX_VECTOR) // interrupt handler shou
                         // we should bail here, because the next buffer is empty, so we've had a usb buff fill underrun
                         macdata.mac_state = MAC_STATE_NONHOPPING;
                         resetRFSTATE();
-                        LED = 0;
                     }
 
                     // reset buffer index to the 2nd byte of next buffer (first byte = buflen)
@@ -504,12 +490,8 @@ void rfIntHandler(void) __interrupt(RF_VECTOR) // interrupt handler should trigg
             {
                 // contingency - Packet Not Handled!
                 /* Main app didn't process previous packet yet, drop this one */
-                LED = ledMode & !LED;
                 rfRxCounter[rfRxCurrentBuffer] = 0;
-                LED = ledMode & !LED;
             }
-            // LED off - we're done receiving
-            LED = 0;
         }
         RFIF &= ~(RFIF_IRQ_DONE | RFIF_IRQ_TIMEOUT); // OVF needs to be handled next...
     }
@@ -518,24 +500,14 @@ void rfIntHandler(void) __interrupt(RF_VECTOR) // interrupt handler should trigg
     if (RFIF & RFIF_IRQ_RXOVF)
     {
         //  RX overflow, only way to get out of this is to restart receiver //
-        // resetRf();
-        LED = ledMode & !LED;
-
         resetRFSTATE();
-
-        LED = ledMode & !LED;
         RFIF &= ~RFIF_IRQ_RXOVF;
     }
     // contingency - TX Underflow
     if (RFIF & RFIF_IRQ_TXUNF)
     {
         // Put radio into idle state //
-        LED = ledMode & !LED;
-
         resetRFSTATE();
-
-        LED = ledMode & !LED;
-
         RFIF &= ~RFIF_IRQ_TXUNF;
     }
 }

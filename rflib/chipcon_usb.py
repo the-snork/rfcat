@@ -651,7 +651,7 @@ class USBDongle(object):
         
     def RESET(self):
         try:
-            r = self.send(APP_SYSTEM, SYS_CMD_RESET, b"RESET_NOW\x00")
+            r = self.send(APP_SYSTEM, SYS_CMD_RESET, b"")
         except ChipconUsbTimeoutException:
             pass
         
@@ -661,10 +661,6 @@ class USBDongle(object):
 
     def poke(self, addr, data):
         r, t = self.send(APP_SYSTEM, SYS_CMD_POKE, struct.pack("<H", addr) + data)
-
-    def getBuildInfo(self):
-        r, t = self.send(APP_SYSTEM, SYS_CMD_BUILDTYPE, b'')
-        return r
             
     def getDeviceSerialNumber(self):
         r, t = self.send(APP_SYSTEM, SYS_CMD_DEVICE_SERIAL_NUMBER, b'')
@@ -698,13 +694,6 @@ class USBDongle(object):
 
     def reprHardwareConfig(self):
         output= []
-
-        hardware = self.getBuildInfo()
-        output.append("Dongle:              %s" % hardware.split(b' ')[0])
-        try:
-            output.append("Firmware rev:        %s" % hardware.split(b'r')[1])
-        except:
-            output.append("Firmware rev:        Not found! Update needed!")
 
         # see if we have a bootloader by loooking for it's recognition semaphores
         # in SFR I2SCLKF0 & I2SCLKF1

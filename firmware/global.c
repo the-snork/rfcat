@@ -3,9 +3,6 @@
 // used for debugging and tracing execution.  see client's ".getDebugCodes()"
 __xdata u32 clock;
 
-// ENABLE/DISABLE LED(s)
-__xdata u8 ledMode = 1;
-
 void sleepMillis(int ms)
 {
     int j;
@@ -14,53 +11,6 @@ void sleepMillis(int ms)
         for (j = 0; j < SLEEPTIMER; j++)
             ; // about 1 millisecond
     }
-}
-
-void blink_binary_baby_lsb(u16 num, signed char bits)
-{
-    LED = 1;
-    sleepMillis(1000);
-    LED = 0;
-    sleepMillis(500);
-    bits -= 1; // 16 bit numbers needs to start on bit 15, etc....
-
-    for (; bits >= 0; bits--)
-    {
-        if (num & 1)
-        {
-            sleepMillis(25);
-            LED = 1;
-            sleepMillis(550);
-            LED = 0;
-            sleepMillis(25);
-        }
-        else
-        {
-            sleepMillis(275);
-            LED = 1;
-            sleepMillis(50);
-            LED = 0;
-            sleepMillis(275);
-        }
-        num = num >> 1;
-    }
-    LED = 0;
-    sleepMillis(1000);
-}
-
-int strncmp(const char *__xdata s1, const char *__xdata s2, u16 n)
-{
-    char tst;
-
-    for (; n > 0; n--)
-    {
-        tst = *s1 - *s2;
-        if (tst)
-            return tst;
-        s1++;
-        s2++;
-    }
-    return 0;
 }
 
 void clock_init(void)
@@ -92,19 +42,12 @@ void clock_init(void)
 /* initialize the IO subsystems for the appropriate dongles */
 void io_init(void)
 {
-    // USB, LED1, LED2, and LED3
-    P1DIR |= 0xf;
     // amplifier configuration pins
     P2DIR |= 0x19;
     // initial states
-    LED2 = 0;
-    LED3 = 0;
     TX_AMP_EN = 0;
     RX_AMP_EN = 0;
     AMP_BYPASS_EN = 1;
-
-    // Turn off LED
-    LED = 0;
 }
 
 void t1IntHandler(void) __interrupt(T1_VECTOR) // interrupt handler should trigger on T1 overflow
